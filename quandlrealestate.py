@@ -1,5 +1,7 @@
 #TODO: add more documentation
 #TODO: add zipcode option
+#TODO: Add unit tests
+
 import quandl
 import pandas as pd
 import requests
@@ -208,9 +210,13 @@ class QuandlRealestateSDK(threading.Thread):
 
         cond_list = [conditional_one] + list(args)
 
-        set_cond_query ="QuandlRealestateSDK.FRAME_DICT['{}']".format(selection) +"[" +" & ".join(["QuandlRealestateSDK.FRAME_DICT['{}']['DESCRIPTION'].str.contains('{}')".format(selection,cond) for cond in cond_list])+']'
-
-        self.selection_frame = eval(set_cond_query)
+        mask = QuandlRealestateSDK.FRAME_DICT[selection]
+        x = None
+        for cond in cond_list:
+            x = mask[mask['DESCRIPTION'].str.contains(cond)]
+            mask = x
+        
+        self.selection_frame = mask
         return self.selection_frame
 
     #setter
