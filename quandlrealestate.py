@@ -140,7 +140,14 @@ class QuandlRealestateSDK(threading.Thread):
                 <class>.__set_valid_indcodes(self,lst)
                 <class>.__set_queue(self)
         '''
+
+    #-------------REMEMBER TO ADD YOUR DEVELOPER KEY BELOW---------------------
+    #**************************************************************************
+    ###########################################################################
     quandl.ApiConfig.api_key = '<YOUR DEVELOPER KEY HERE>'
+    ###########################################################################
+    #**************************************************************************
+    #--------------------------------------------------------------------------
 
     CODES = [STATECODES_URL,COUNTYCODES_URL,METROCODES_URL,CITYCODES_URL,NBHCODES_URL,INDCODES_URL]
 
