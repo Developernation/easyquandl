@@ -9,7 +9,6 @@ import pandas as pd
 import requests
 from queue import Queue
 import threading
-from qndlvars import *
 
 
 class QuandlRealestateSDK(threading.Thread):
@@ -238,7 +237,7 @@ class QuandlRealestateSDK(threading.Thread):
         available_ind_list = []
         for val in lst:
             try:
-                rental_Indx_SFR = quandl.get('ZILLOW/{}_{}'.format(self.__item_code, val))
+                quandl.get('ZILLOW/{}_{}'.format(self.__item_code, val))
                 available_ind_list.append(
                     QuandlRealestateSDK.INDCODES_DF[QuandlRealestateSDK.INDCODES_DF['CODE'] == val])
             except:
