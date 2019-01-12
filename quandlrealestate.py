@@ -215,7 +215,7 @@ class QuandlRealestateSDK(threading.Thread):
         for cond in cond_list:
             x = mask[mask['DESCRIPTION'].str.contains(cond)]
             mask = x
-        
+
         self.selection_frame = mask
         return self.selection_frame
 
@@ -229,7 +229,7 @@ class QuandlRealestateSDK(threading.Thread):
         available_ind_list = []
         for val in lst:
             try:
-                rental_Indx_SFR = quandl.get('ZILLOW/{}_{}'.format(self.__item_code,val))
+                res = quandl.get('ZILLOW/{}_{}'.format(self.__item_code,val))
                 available_ind_list.append(QuandlRealestateSDK.INDCODES_DF[QuandlRealestateSDK.INDCODES_DF['CODE']==val])
             except:
                 #log exceptions
