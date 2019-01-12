@@ -136,13 +136,16 @@ class QuandlRealestateSDK(threading.Thread):
                 <class>.lookup_codes(self,selection,conditional_one,*args)
                 <class>.set_item_code(self, item_code)
                 <class>.run_indicator_validation(self)
-                <class>.lookup_ind_codes(self,ind_codes_list)
                 <class>.custom_qr_query(self,ind_code,info_date=None)
-                <class>.join_qr_frame_index(self,frame_1,*args)
 
             Private:
                 <class>.__set_valid_indcodes(self,lst)
                 <class>.__set_queue(self)
+        ---------------------------------------------------------------------------------------------------------------
+        Static Methods:
+            Public:
+                lookup_ind_codes(ind_codes_list)
+                join_qr_frame_index(frame_1,*args)
         """
 
     # -------------REMEMBER TO ADD YOUR DEVELOPER KEY BELOW---------------------
@@ -267,11 +270,7 @@ class QuandlRealestateSDK(threading.Thread):
             t.start()
         t.join()
 
-    @staticmethod
-    def lookup_ind_codes(ind_codes_list):
-        data = [QuandlRealestateSDK.INDCODES_DF[QuandlRealestateSDK.INDCODES_DF['CODE'] == ind_code] for ind_code in
-                ind_codes_list]
-        return pd.concat(data)
+
 
     def custom_qr_query(self, ind_code, info_date=None):
         assert self.valid_codes_df is not None, "The are currently no indicator codes for your query. Please try " \
@@ -287,6 +286,13 @@ class QuandlRealestateSDK(threading.Thread):
             columns={'Value': desc['DESCRIPTION'].values[0]})
         return custom_frame
 
-    def join_qr_frame_index(self, frame_1, *args):
+    @staticmethod
+    def lookup_ind_codes(ind_codes_list):
+        data = [QuandlRealestateSDK.INDCODES_DF[QuandlRealestateSDK.INDCODES_DF['CODE'] == ind_code] for ind_code in
+                ind_codes_list]
+        return pd.concat(data)
+
+    @staticmethod
+    def join_qr_frame_index(frame_1, *args):
         data = pd.concat([frame_1.join(arg, how='outer') for arg in args], sort=True)
         return data
