@@ -113,8 +113,8 @@ class QuandlRealestateSDK(threading.Thread):
                                 C is for CITY
                                 O516 is the specific city you would like to get information about
                             Item code information is automatically formatted in the dataframe.
-                            The user will set the specific item code to be used in the program by calling the
-                            <class>.set_item_code(self,<item_code>) method.
+                            For example, the user can set the specific item code to be used in the program
+                            <class>.item_code = 'C0516'
 
                 self.__valid_codes_list = []
                         (list of strings) this is a list of valid indicator codes for the selected area type
@@ -270,8 +270,6 @@ class QuandlRealestateSDK(threading.Thread):
             t.daemon = True
             t.start()
         t.join()
-
-
 
     def custom_qr_query(self, ind_code, info_date=None):
         assert self.valid_codes_df is not None, "The are currently no indicator codes for your query. Please try " \
