@@ -2,6 +2,7 @@
 # TODO: add zipcode option
 # TODO: Add unit tests
 # TODO? lookup_codes selection shortcuts e.g. if starts with s, state
+# TODO? separate data retrieval to model class
 
 import quandl
 import pandas as pd
