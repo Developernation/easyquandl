@@ -1,6 +1,7 @@
 # TODO: add more documentation
 # TODO: add zipcode option
 # TODO: Add unit tests
+# TODO? lookup_codes selection shortcuts e.g. if starts with s, state
 
 import quandl
 import pandas as pd
