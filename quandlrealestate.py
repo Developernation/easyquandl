@@ -267,7 +267,8 @@ class QuandlRealestateSDK(threading.Thread):
             t.start()
         t.join()
 
-    def lookup_ind_codes(self, ind_codes_list):
+    @staticmethod
+    def lookup_ind_codes(ind_codes_list):
         data = [QuandlRealestateSDK.INDCODES_DF[QuandlRealestateSDK.INDCODES_DF['CODE'] == ind_code] for ind_code in
                 ind_codes_list]
         return pd.concat(data)
