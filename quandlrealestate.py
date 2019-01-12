@@ -221,10 +221,13 @@ class QuandlRealestateSDK(threading.Thread):
         self.selection_frame = mask
         return self.selection_frame
 
-    # setter
-    def set_item_code(self, item_code):
-        self.__item_code = item_code
+    @property
+    def item_code(self):
         return self.__item_code
+
+    @item_code.setter
+    def item_code(self, item_code):
+        self.__item_code = item_code
 
     def __set_valid_indcodes(self, lst):
         available_ind_list = []
