@@ -237,14 +237,14 @@ class QuandlRealestateSDK(threading.Thread):
         available_ind_list = []
         for val in lst:
             try:
-<<<<<<< HEAD:quandlrealestate.py
+#<<<<<<< HEAD:quandlrealestate.py
                 res = quandl.get('ZILLOW/{}_{}'.format(self.__item_code,val))
                 available_ind_list.append(QuandlRealestateSDK.INDCODES_DF[QuandlRealestateSDK.INDCODES_DF['CODE']==val])
-=======
+#=======
                 quandl.get('ZILLOW/{}_{}'.format(self.__item_code, val))
                 available_ind_list.append(
                     QuandlRealestateSDK.INDCODES_DF[QuandlRealestateSDK.INDCODES_DF['CODE'] == val])
->>>>>>> 8d613f334f1a35f6b03adb23d0204ebce2db6d9b:src/quandlrealestate.py
+#>>>>>>> 8d613f334f1a35f6b03adb23d0204ebce2db6d9b:src/quandlrealestate.py
             except:
                 # log exceptions
                 pass
