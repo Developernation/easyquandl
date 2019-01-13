@@ -1,21 +1,23 @@
-#TODO: add more documentation
-#TODO: add zipcode option
-#TODO: Add unit tests
+# TODO: add more documentation
+# TODO: add zipcode option
+# TODO: Add unit tests
+# TODO? lookup_codes selection shortcuts e.g. if starts with s, state
+# TODO? separate data retrieval to model class
 
 import quandl
 import pandas as pd
 import requests
 from queue import Queue
 import threading
-from qndlvars import *
+
 
 class QuandlRealestateSDK(threading.Thread):
-    '''The QuandlRealestateSDK is a wrapper for the Quandl real estate API.
+    """The QuandlRealestateSDK is a wrapper for the Quandl real estate API.
     The package allows you to view the information returned by the Quandl real estate API
     in a pandas dataframe.
 
     Because not all types of real estate information are available for every area type this
-    package checks to see which inidicator code is valid for the area type you are searching.
+    package checks to see which indicator code is valid for the area type you are searching.
 
     Inherits from:
         threading.Thread
@@ -63,7 +65,7 @@ class QuandlRealestateSDK(threading.Thread):
             CITYCODES
                 keys for the city dictionary
             NBHCODES
-                keys for the neiborhood dictionary
+                keys for the neighborhood dictionary
             INDCODES_CD
                 keys for the indicator codes dictionary
             AREA_TYPECODES
@@ -110,8 +112,8 @@ class QuandlRealestateSDK(threading.Thread):
                                 C is for CITY
                                 O516 is the specific city you would like to get information about
                             Item code information is automatically formatted in the dataframe.
-                            The user will set the specific item code to be used in the program by calling the
-                            <class>.set_item_code(self,<item_code>) method.
+                            For example, the user can set the specific item code to be used in the program
+                            <class>.item_code = 'C0516'
 
                 self.__valid_codes_list = []
                         (list of strings) this is a list of valid indicator codes for the selected area type
@@ -134,29 +136,33 @@ class QuandlRealestateSDK(threading.Thread):
                 <class>.lookup_codes(self,selection,conditional_one,*args)
                 <class>.set_item_code(self, item_code)
                 <class>.run_indicator_validation(self)
-                <class>.lookup_ind_codes(self,ind_codes_list)
                 <class>.custom_qr_query(self,ind_code,info_date=None)
-                <class>.join_qr_frame_index(self,frame_1,*args)
 
             Private:
                 <class>.__set_valid_indcodes(self,lst)
                 <class>.__set_queue(self)
-        '''
+        ---------------------------------------------------------------------------------------------------------------
+        Static Methods:
+            Public:
+                lookup_ind_codes(ind_codes_list)
+                join_qr_frame_index(frame_1,*args)
+        """
 
-    #-------------REMEMBER TO ADD YOUR DEVELOPER KEY BELOW---------------------
-    #**************************************************************************
+    # -------------REMEMBER TO ADD YOUR DEVELOPER KEY BELOW---------------------
+    # **************************************************************************
     ###########################################################################
     quandl.ApiConfig.api_key = '<YOUR DEVELOPER KEY HERE>'
     ###########################################################################
-    #**************************************************************************
-    #--------------------------------------------------------------------------
+    # **************************************************************************
+    # --------------------------------------------------------------------------
 
-    CODES = [STATECODES_URL,COUNTYCODES_URL,METROCODES_URL,CITYCODES_URL,NBHCODES_URL,INDCODES_URL]
+    CODES = [STATECODES_URL, COUNTYCODES_URL, METROCODES_URL, CITYCODES_URL, NBHCODES_URL, INDCODES_URL]
 
-    #associative array
+    # associative array
 
-    #parses ursl into lists
-    CODE_LIST = [dict(map(lambda x: x.split('|'),requests.get(info).text.split('\n')[1:-1])) for info in CODES]+[AREA_TYPE]
+    # parses ursl into lists
+    CODE_LIST = [dict(map(lambda x: x.split('|'), requests.get(info).text.split('\n')[1:-1])) for info in CODES] + [
+        AREA_TYPE]
     STATECODES = CODE_LIST[0].keys()
     COUNTYCODES = CODE_LIST[1].keys()
     METROCODES = CODE_LIST[2].keys()
@@ -166,9 +172,8 @@ class QuandlRealestateSDK(threading.Thread):
     AREA_TYPECODES = CODE_LIST[6].keys()
     LEN_INDCODES_CD = len(INDCODES_CD)
 
-
-    #DATAFRAMES
-    DFS = [pd.DataFrame(list(codes.items()), index=None,columns=['DESCRIPTION','CODE']) for codes in CODE_LIST]
+    # DATAFRAMES
+    DFS = [pd.DataFrame(list(codes.items()), index=None, columns=['DESCRIPTION', 'CODE']) for codes in CODE_LIST]
 
     STATESCODES_DF = DFS[0]
     COUNTYCODES_DF = DFS[1]
@@ -178,8 +183,8 @@ class QuandlRealestateSDK(threading.Thread):
     INDCODES_DF = DFS[5]
     AREA_TYPE_DF = DFS[6]
 
-    ALL_CODES = [[STATESCODES_DF,'S'],[COUNTYCODES_DF,'CO'],[METROCODES_DF,'M'],
-                 [CITYCODES_DF,'C'],[NBHCODES_DF,'N']]
+    ALL_CODES = [[STATESCODES_DF, 'S'], [COUNTYCODES_DF, 'CO'], [METROCODES_DF, 'M'],
+                 [CITYCODES_DF, 'C'], [NBHCODES_DF, 'N']]
 
     FRAME_DICT = {
         'STATE': STATESCODES_DF,
@@ -201,12 +206,13 @@ class QuandlRealestateSDK(threading.Thread):
 
         for lst in QuandlRealestateSDK.ALL_CODES:
             if not lst[0]['CODE'].str.contains(lst[1]).all():
-                lst[0]['CODE'] = lst[0]['CODE'].apply(lambda x: lst[1]+str(x))
+                lst[0]['CODE'] = lst[0]['CODE'].apply(lambda x: lst[1] + str(x))
 
-    def lookup_codes(self,selection,conditional_one,*args):
+    def lookup_codes(self, selection, conditional_one, *args):
         selection = selection.upper()
         if selection not in QuandlRealestateSDK.FRAME_DICT:
-            raise KeyError("{} not a valid selection. Choose from: {}".format(selection,list(QuandlRealestateSDK.FRAME_DICT.keys())))
+            raise KeyError("'{}' not a valid selection. "
+                           "Choose from: {}".format(selection, list(QuandlRealestateSDK.FRAME_DICT.keys())))
 
         cond_list = [conditional_one] + list(args)
 
@@ -219,39 +225,46 @@ class QuandlRealestateSDK(threading.Thread):
         self.selection_frame = mask
         return self.selection_frame
 
-    #setter
-    def set_item_code(self, item_code):
-        self.__item_code = item_code
+    @property
+    def item_code(self):
         return self.__item_code
 
+    @item_code.setter
+    def item_code(self, item_code):
+        self.__item_code = item_code
 
-    def __set_valid_indcodes(self,lst):
+    def __set_valid_indcodes(self, lst):
         available_ind_list = []
         for val in lst:
             try:
+#<<<<<<< HEAD:quandlrealestate.py
                 res = quandl.get('ZILLOW/{}_{}'.format(self.__item_code,val))
                 available_ind_list.append(QuandlRealestateSDK.INDCODES_DF[QuandlRealestateSDK.INDCODES_DF['CODE']==val])
+#=======
+                quandl.get('ZILLOW/{}_{}'.format(self.__item_code, val))
+                available_ind_list.append(
+                    QuandlRealestateSDK.INDCODES_DF[QuandlRealestateSDK.INDCODES_DF['CODE'] == val])
+#>>>>>>> 8d613f334f1a35f6b03adb23d0204ebce2db6d9b:src/quandlrealestate.py
             except:
-                #log exceptions
+                # log exceptions
                 pass
 
         self.__valid_codes_list += available_ind_list
 
-        if len(self.__valid_codes_list)>0:
+        if len(self.__valid_codes_list) > 0:
             self.valid_codes_df = pd.concat(self.__valid_codes_list, ignore_index=True)
 
         return self.__valid_codes_list
 
-
     def __set_queue(self):
         num = len(QuandlRealestateSDK.INDCODES_DF['CODE'].values)
         codes = QuandlRealestateSDK.INDCODES_DF['CODE'].values
-        for i in range(0,num,2):
+        for i in range(0, num, 2):
             if (num - i) < 2:
                 self._queue.put(codes[i:num])
                 self._queue.task_done()
             else:
-                self._queue.put(codes[i:i+3])
+                self._queue.put(codes[i:i + 3])
                 self._queue.task_done()
 
     def run_indicator_validation(self):
@@ -262,21 +275,27 @@ class QuandlRealestateSDK(threading.Thread):
             t.start()
         t.join()
 
-    def lookup_ind_codes(self,ind_codes_list):
-        data = [QuandlRealestateSDK.INDCODES_DF[QuandlRealestateSDK.INDCODES_DF['CODE'] == ind_code] for ind_code in ind_codes_list]
-        return pd.concat(data)
-
-    def custom_qr_query(self,ind_code,info_date=None):
-        assert self.valid_codes_df is not None,"The are currently no indicator codes for your query. Please try again later."
-        if len(self.valid_codes_df[self.valid_codes_df['CODE']==ind_code])<1:
+    def custom_qr_query(self, ind_code, info_date=None):
+        assert self.valid_codes_df is not None, "The are currently no indicator codes for your query. Please try " \
+                                                "again later. "
+        if len(self.valid_codes_df[self.valid_codes_df['CODE'] == ind_code]) < 1:
             raise ValueError("{} is not a valid Indicator Code".format(ind_code))
-        desc = self.valid_codes_df[self.valid_codes_df['CODE']==ind_code]
+        desc = self.valid_codes_df[self.valid_codes_df['CODE'] == ind_code]
         if info_date is not None:
-            self.final_frame = quandl.get('ZILLOW/{}_{}'.format(self.__item_code,ind_code),start_date=info_date).rename(columns={'Value':desc['DESCRIPTION'].values[0]})
+            self.final_frame = quandl.get('ZILLOW/{}_{}'.format(self.__item_code, ind_code),
+                                          start_date=info_date).rename(columns={'Value': desc['DESCRIPTION'].values[0]})
             return self.final_frame
-        custom_frame = quandl.get('ZILLOW/{}_{}'.format(self.__item_code,ind_code),start_date=info_date).rename(columns={'Value':desc['DESCRIPTION'].values[0]})
+        custom_frame = quandl.get('ZILLOW/{}_{}'.format(self.__item_code, ind_code), start_date=info_date).rename(
+            columns={'Value': desc['DESCRIPTION'].values[0]})
         return custom_frame
 
-    def join_qr_frame_index(self,frame_1,*args):
-        data = pd.concat([frame_1.join(arg,how='outer') for arg in args],sort=True)
+    @staticmethod
+    def lookup_ind_codes(ind_codes_list):
+        data = [QuandlRealestateSDK.INDCODES_DF[QuandlRealestateSDK.INDCODES_DF['CODE'] == ind_code] for ind_code in
+                ind_codes_list]
+        return pd.concat(data)
+
+    @staticmethod
+    def join_qr_frame_index(frame_1, *args):
+        data = pd.concat([frame_1.join(arg, how='outer') for arg in args], sort=True)
         return data
