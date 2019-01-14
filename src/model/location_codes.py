@@ -50,9 +50,10 @@ class LocationCodes:
                       method: str = 'tinydb') -> None:
         if method == 'tinydb':
             db = TinyDB(out_file)
+            db.purge_tables() #clear the db
             for record in records:
                 db.insert(record)
-        else:
+        else: #TODO alternative  dbs/formats
             raise ValueError(f"Method {method} not yet implemented")
 
 #LocationCodes()
