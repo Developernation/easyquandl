@@ -114,8 +114,12 @@ setup(
 
     packages=find_packages(exclude=['tests']),  # Required
 
-    install_requires=['pandas',
+    install_requires=['interface',
+                      'numpy',
+                      'pandas',
+                      'requests',
                       'tinydb',
+                      'ujson',
                       ],
 
     # List additional groups of dependencies here (e.g. development
