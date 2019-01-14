@@ -51,8 +51,7 @@ class LocationCodes:
         if method == 'tinydb':
             db = TinyDB(out_file)
             db.purge_tables() #clear the db
-            for record in records:
-                db.insert(record)
+            db.insert_multiple(records) #thousands of times faster than individual inserts
         else: #TODO alternative  dbs/formats
             raise ValueError(f"Method {method} not yet implemented")
 
