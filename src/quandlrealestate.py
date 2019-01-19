@@ -37,14 +37,6 @@ class QuandlRealestateSDK(threading.Thread):
             API KEY:
                 quandl.ApiConfig.api_key = <insert your api key here>
 
-            Urls of API resources formatted into pandas dataframes:
-                STATECODES_URL = 'https://s3.amazonaws.com/quandl-production-static/zillow/areas_state.txt'
-                COUNTYCODES_URL = 'https://s3.amazonaws.com/quandl-production-static/zillow/areas_county.txt'
-                METROCODES_URL = 'https://s3.amazonaws.com/quandl-production-static/zillow/areas_metro.txt'
-                CITYCODES_URL = 'https://s3.amazonaws.com/quandl-production-static/zillow/areas_city.txt'
-                NBHCODES_URL = 'https://s3.amazonaws.com/quandl-production-static/zillow/areas_neighborhood.txt'
-                INDCODES_URL = 'https://s3.amazonaws.com/quandl-production-static/zillow/indicators.csv
-
             The following codes dictate the size/nature of the area your would like to search:
                 (DICT)AREA_TYPE=
                     STATE:   S
@@ -54,47 +46,10 @@ class QuandlRealestateSDK(threading.Thread):
                     Neighborhood: N
                     Zip Code: Z
 
-            CODES
-                This is list of resource urls that contain data which are parsed into the dictionaries used to make pandas
-                dataframes.
-
-            CODE_LIST
-                This variable contains all of the parsed dictionaries
-
-            STATECODES
-                keys for the states dictionary
-            COUNTYCODES
-                keys for the county dictionary
-            METROCODES
-                keys for the metro areas dictionary
-            CITYCODES
-                keys for the city dictionary
-            NBHCODES
-                keys for the neighborhood dictionary
-            INDCODES_CD
-                keys for the indicator codes dictionary
             AREA_TYPECODES
                 keys for the area types dictionary
             LEN_INDCODES_CD
                 Current number of indicator codes used in the API
-
-            DFS
-                Class variable containing all of the area type and indicator code dictionaries as pandas dataframes
-
-            STATESCODES_DF
-                states codes dataframe
-            COUNTYCODES_DF
-                county codes dataframe
-            METROCODES_DF
-                metro codes dataframe
-            CITYCODES_DF
-                city codes dataframe
-            NBHCODES_DF
-                neigborhood codes dataframe
-            INDCODES_DF
-                indicator codes dataframe
-            AREA_TYPE_DF
-                area type dataframe
 
             FRAME_DICT
                 A dictionary containing normalized codes that should be used to specify the area type to be searched.
@@ -123,6 +78,9 @@ class QuandlRealestateSDK(threading.Thread):
                 self.__valid_codes_list = []
                         (list of strings) this is a list of valid indicator codes for the selected area type
                         and specific locale
+
+                self.__lookup_frame = None
+
             Public:
                 self.valid_codes_df = None
                     This is a dynamically updating pandas dataframe of valid indicator codes. The dataframe is updated
@@ -138,11 +96,11 @@ class QuandlRealestateSDK(threading.Thread):
         ---------------------------------------------------------------------------------------------------------------
         Instance Methods:
             Public:
-                <class>.lookup_codes(self,selection,conditional_one,*args)
+                <class>.lookup_codes(self,selection)
                 <class>.set_item_code(self, item_code)
                 <class>.run_indicator_validation(self)
                 <class>.custom_qr_query(self,ind_code,info_date=None)
-
+                <class>.drill_down_loc(self,conditional_one,*args)
             Private:
                 <class>.__set_valid_indcodes(self,lst)
                 <class>.__set_queue(self)
