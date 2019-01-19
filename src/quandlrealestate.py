@@ -1,16 +1,21 @@
-# TODO: add more documentation
-# TODO: add zipcode option
-# TODO: Add unit tests
-# TODO? lookup_codes selection shortcuts e.g. if starts with s, state
-# TODO? separate data retrieval to model class
-
 import quandl
 import pandas as pd
 import requests
 from queue import Queue
 import threading
+from qndlvars import *
+from utils.qndl_urls import *
+from utils.quandlutils import *
+import logging
+from logging.config import fileConfig
+fileConfig('logging_config.ini')
+logger = logging.getLogger()
 
-
+# TODO: add more documentation
+# TODO: add zipcode option
+# TODO: Add unit tests
+# TODO? lookup_codes selection shortcuts e.g. if starts with s, state
+# TODO? separate data retrieval to model class
 class QuandlRealestateSDK(threading.Thread):
     """The QuandlRealestateSDK is a wrapper for the Quandl real estate API.
     The package allows you to view the information returned by the Quandl real estate API
@@ -151,47 +156,20 @@ class QuandlRealestateSDK(threading.Thread):
     # -------------REMEMBER TO ADD YOUR DEVELOPER KEY BELOW---------------------
     # **************************************************************************
     ###########################################################################
-    quandl.ApiConfig.api_key = '<YOUR DEVELOPER KEY HERE>'
+    quandl.ApiConfig.api_key = 'WbHs89Z3rbFtSyspyJAC'
     ###########################################################################
     # **************************************************************************
     # --------------------------------------------------------------------------
-
-    CODES = [STATECODES_URL, COUNTYCODES_URL, METROCODES_URL, CITYCODES_URL, NBHCODES_URL, INDCODES_URL]
-
-    # associative array
-
-    # parses ursl into lists
-    CODE_LIST = [dict(map(lambda x: x.split('|'), requests.get(info).text.split('\n')[1:-1])) for info in CODES] + [
-        AREA_TYPE]
-    STATECODES = CODE_LIST[0].keys()
-    COUNTYCODES = CODE_LIST[1].keys()
-    METROCODES = CODE_LIST[2].keys()
-    CITYCODES = CODE_LIST[3].keys()
-    NBHCODES = CODE_LIST[4].keys()
-    INDCODES_CD = CODE_LIST[5].keys()
-    AREA_TYPECODES = CODE_LIST[6].keys()
-    LEN_INDCODES_CD = len(INDCODES_CD)
-
-    # DATAFRAMES
-    DFS = [pd.DataFrame(list(codes.items()), index=None, columns=['DESCRIPTION', 'CODE']) for codes in CODE_LIST]
-
-    STATESCODES_DF = DFS[0]
-    COUNTYCODES_DF = DFS[1]
-    METROCODES_DF = DFS[2]
-    CITYCODES_DF = DFS[3]
-    NBHCODES_DF = DFS[4]
-    INDCODES_DF = DFS[5]
-    AREA_TYPE_DF = DFS[6]
-
-    ALL_CODES = [[STATESCODES_DF, 'S'], [COUNTYCODES_DF, 'CO'], [METROCODES_DF, 'M'],
-                 [CITYCODES_DF, 'C'], [NBHCODES_DF, 'N']]
+    #QUERY CODES
+    INDCODES_DF=readInData(INDCODES_URL,'|',1,'DESCRIPTION','CODE')
+    LEN_INDCODES_CD = len(INDCODES_DF)
 
     FRAME_DICT = {
-        'STATE': STATESCODES_DF,
-        'COUNTY': COUNTYCODES_DF,
-        'METRO': METROCODES_DF,
-        'CITY': CITYCODES_DF,
-        'NBH': NBHCODES_DF,
+        'STATE': ['S', STATECODES_URL],
+        'COUNTY' : ['CO', COUNTYCODES_URL],
+        'METRO': ['M',METROCODES_URL],
+        'CITY': ['C',CITYCODES_URL],
+        'NBH': ['N',NBHCODES_URL],
         'IND_CODES': INDCODES_DF
     }
 
@@ -200,23 +178,26 @@ class QuandlRealestateSDK(threading.Thread):
         self.__item_code = None
         self.__valid_codes_list = []
         self.valid_codes_df = None
+        self.__lookup_frame = None
         self.selection_frame = None
         self.custom_frame = None
         self._queue = Queue()
 
-        for lst in QuandlRealestateSDK.ALL_CODES:
-            if not lst[0]['CODE'].str.contains(lst[1]).all():
-                lst[0]['CODE'] = lst[0]['CODE'].apply(lambda x: lst[1] + str(x))
-
-    def lookup_codes(self, selection, conditional_one, *args):
+    def lookup_codes(self,selection:'string of AREA_TYPE'):
         selection = selection.upper()
+        f_dict = QuandlRealestateSDK.FRAME_DICT[selection]
         if selection not in QuandlRealestateSDK.FRAME_DICT:
             raise KeyError("'{}' not a valid selection. "
-                           "Choose from: {}".format(selection, list(QuandlRealestateSDK.FRAME_DICT.keys())))
+                           "Choose from: {}".format(selection, [x for x in f_dict.keys() if x is not 'IND_CODES']))
+        codes = readInData(f_dict[1],'|',1,'DESCRIPTION','CODE')
+        codes['CODE'] = codes['CODE'].apply(lambda x: f_dict[0]+str(x))
+        self.__lookup_frame = codes
+        return self.__lookup_frame
 
+    def drill_down_loc(self,conditional_one, *args):
         cond_list = [conditional_one] + list(args)
 
-        mask = QuandlRealestateSDK.FRAME_DICT[selection]
+        mask = self.__lookup_frame
         x = None
         for cond in cond_list:
             x = mask[mask['DESCRIPTION'].str.contains(cond)]
