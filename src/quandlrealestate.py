@@ -141,6 +141,7 @@ class QuandlRealestateSDK(threading.Thread):
 
     def lookup_codes(self,selection:'string of AREA_TYPE'):
         selection = selection.upper()
+        
         f_dict = QuandlRealestateSDK.FRAME_DICT[selection]
         if selection not in QuandlRealestateSDK.FRAME_DICT:
             raise KeyError("'{}' not a valid selection. "
