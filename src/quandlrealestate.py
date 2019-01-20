@@ -141,7 +141,7 @@ class QuandlRealestateSDK(threading.Thread):
 
     def lookup_codes(self,selection:'string of AREA_TYPE'):
         selection = selection.upper()
-        
+
         f_dict = QuandlRealestateSDK.FRAME_DICT[selection]
         if selection not in QuandlRealestateSDK.FRAME_DICT:
             raise KeyError("'{}' not a valid selection. "
@@ -153,7 +153,6 @@ class QuandlRealestateSDK(threading.Thread):
 
     def drill_down_loc(self,conditional_one, *args):
         cond_list = [conditional_one] + list(args)
-
         mask = self.__lookup_frame
         x = None
         for cond in cond_list:
@@ -175,12 +174,9 @@ class QuandlRealestateSDK(threading.Thread):
         available_ind_list = []
         for val in lst:
             try:
-                res = quandl.get('ZILLOW/{}_{}'.format(self.__item_code,val))
-                available_ind_list.append(QuandlRealestateSDK.INDCODES_DF[QuandlRealestateSDK.INDCODES_DF['CODE']==val])
                 quandl.get('ZILLOW/{}_{}'.format(self.__item_code, val))
                 available_ind_list.append(
                     QuandlRealestateSDK.INDCODES_DF[QuandlRealestateSDK.INDCODES_DF['CODE'] == val])
-
             except:
                 # log exceptions
                 pass
