@@ -3,7 +3,6 @@ import pandas as pd
 import requests
 from queue import Queue
 import threading
-from qndlvars import *
 from utils.qndl_urls import *
 from utils.quandlutils import *
 import logging
@@ -108,7 +107,6 @@ class QuandlRealestateSDK(threading.Thread):
         Static Methods:
             Public:
                 lookup_ind_codes(ind_codes_list)
-                join_qr_frame_index(frame_1,*args)
         """
 
     # -------------REMEMBER TO ADD YOUR DEVELOPER KEY BELOW---------------------
@@ -176,14 +174,12 @@ class QuandlRealestateSDK(threading.Thread):
         available_ind_list = []
         for val in lst:
             try:
-#<<<<<<< HEAD:quandlrealestate.py
                 res = quandl.get('ZILLOW/{}_{}'.format(self.__item_code,val))
                 available_ind_list.append(QuandlRealestateSDK.INDCODES_DF[QuandlRealestateSDK.INDCODES_DF['CODE']==val])
-#=======
                 quandl.get('ZILLOW/{}_{}'.format(self.__item_code, val))
                 available_ind_list.append(
                     QuandlRealestateSDK.INDCODES_DF[QuandlRealestateSDK.INDCODES_DF['CODE'] == val])
-#>>>>>>> 8d613f334f1a35f6b03adb23d0204ebce2db6d9b:src/quandlrealestate.py
+
             except:
                 # log exceptions
                 pass
@@ -233,8 +229,3 @@ class QuandlRealestateSDK(threading.Thread):
         data = [QuandlRealestateSDK.INDCODES_DF[QuandlRealestateSDK.INDCODES_DF['CODE'] == ind_code] for ind_code in
                 ind_codes_list]
         return pd.concat(data)
-
-    @staticmethod
-    def join_qr_frame_index(frame_1, *args):
-        data = pd.concat([frame_1.join(arg, how='outer') for arg in args], sort=True)
-        return data

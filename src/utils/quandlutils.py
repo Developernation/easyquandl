@@ -11,7 +11,12 @@ def readInData(url,separator,skiprows_num=None,*args):
     '''
     return pd.read_table(url,sep=separator,skiprows=skiprows_num,names=args)
 
+def join_qr_frame_index(frame_1, *args):
+    data = pd.concat([frame_1.join(arg, how='outer') for arg in args], sort=True)
+    return data
+
 def cache_df_as_json(dataframe,file_loc):
+    '''converts a dataframe to a json object and saves it to a file'''
     pass
 
 def get_json_cache_as_df(file_path):
