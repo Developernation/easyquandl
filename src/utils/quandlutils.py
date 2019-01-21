@@ -35,7 +35,10 @@ class CacheData:
         return self.__json_data
 
     def get_json_cache_as_df(self,new_file_name=None):
-        ''' '''
+        '''Reterns json file cache information as a dataframe:
+        Optional arguments:
+            new_file_name (str):: allows the user to override the file name
+                                  used in the constructor'''
         if new_file_name is None:
             new_file_name = self.__file_path
         with open(new_file_name,'r') as j:
@@ -43,6 +46,15 @@ class CacheData:
         return pd.read_json(x,orient='columns')
 
     def write_json_cache(self):
-        ''' '''
+        '''writes json files containing dataframe info to a cache'''
         with open(self.__file_path,'w') as f:
             json.dump(self.__json_data,f)
+
+    @staticmethod
+    def show_cached_files(self,data_dir):
+        '''returns a generator containing cached json files
+        Parameters are:
+            data_dir (str):: a directory location of data files'''
+        dir_list = os.listdir(data_dir)
+        return (fle for fle in dir_list if fle.endswith('.json'))
+            :
