@@ -5,17 +5,17 @@ from queue import Queue
 import threading
 from utils.qndl_urls import *
 from utils.quandlutils import *
+from utils.quandlutils import CacheData
 import logging
 from logging.config import fileConfig
 fileConfig('logging_config.ini')
 logger = logging.getLogger()
-
 # TODO: add more documentation
 # TODO: add zipcode option
 # TODO: Add unit tests
 # TODO? lookup_codes selection shortcuts e.g. if starts with s, state
 # TODO? separate data retrieval to model class
-class QuandlRealestateSDK(threading.Thread):
+class QuandlRealestateSDK(threading.Thread,CacheData):
     """The QuandlRealestateSDK is a wrapper for the Quandl real estate API.
     The package allows you to view the information returned by the Quandl real estate API
     in a pandas dataframe.
@@ -129,14 +129,16 @@ class QuandlRealestateSDK(threading.Thread):
         'IND_CODES': INDCODES_DF
     }
 
-    def __init__(self):
+    def __init__(self,file_name=None):
         threading.Thread.__init__(self)
+        CacheData.__init__(self,file_name)
         self.__item_code = None
         self.__valid_codes_list = []
         self.valid_codes_df = None
         self.__lookup_frame = None
         self.selection_frame = None
         self.custom_frame = None
+        self.__dataframe = None
         self._queue = Queue()
 
     def lookup_codes(self,selection:'string of AREA_TYPE'):
