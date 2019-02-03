@@ -1,5 +1,0 @@
-[{"area_type": "S", "url":"https://s3.amazonaws.com/quandl-production-static/zillow/areas_state.txt"},
- {"area_type": "CO", "url":"https://s3.amazonaws.com/quandl-production-static/zillow/areas_county.txt"},
- {"area_type": "M", "url":"https://s3.amazonaws.com/quandl-production-static/zillow/areas_metro.txt"},
- {"area_type": "C", "url":"https://s3.amazonaws.com/quandl-production-static/zillow/areas_city.txt"},
- {"area_type": "N", "url":"https://s3.amazonaws.com/quandl-production-static/zillow/areas_neighborhood.txt"}]
