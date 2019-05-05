@@ -117,6 +117,7 @@ setup(
     install_requires=['interface',
                       'numpy',
                       'pandas',
+                      'quandl',
                       'requests',
                       'tinydb',
                       'ujson',
