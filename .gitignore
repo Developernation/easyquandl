@@ -3,3 +3,4 @@
 src/utils/location/__pycache__/i_location_parser.cpython-36.pyc
 src/utils/location/__pycache__/location_parser.cpython-36.pyc
 venv/*
+*.pyc
